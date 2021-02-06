@@ -7,7 +7,7 @@ public class Station {
     private String name;
     // neighbours includes transferring to same station
     // e.g. Buona Vista (EW) is neighbour of Buona Vista (CC)
-    private ArrayList<NeighbouringStation> neighbours = new ArrayList<NeighbouringStation>();
+    private ArrayList<Station> neighbours = new ArrayList<>();
 
     public Station(StationCode stationCode, String name) {
         this.stationCode = stationCode;
@@ -27,20 +27,26 @@ public class Station {
         return name;
     }
 
-    public void addNeighbour(Station station, int time) {
-        neighbours.add(new NeighbouringStation(station, time));
+    public void addNeighbour(Station station) {
+        neighbours.add(station);
     }
 
-    public ArrayList<NeighbouringStation> getNeighbours() {
+    public ArrayList<Station> getNeighbours() {
         return neighbours;
     }
 
     @Override
     public String toString() {
         return "Station{" +
-                "stationCode=" + stationCode +
+                "stationCode=" + stationCode.toString() +
                 ", name=" + name +
-                ", neighbours=" + neighbours +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof Station
+                && ((Station)other).getStationCode().equals(stationCode)
+                && ((Station)other).getName().equals(name);
     }
 }

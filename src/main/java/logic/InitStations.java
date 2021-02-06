@@ -35,8 +35,8 @@ public class InitStations {
                     // add neighbours based on name
                     for (Station prevStation: stations) {
                         if (prevStation.getName().equals(stationName)) {
-                            prevStation.addNeighbour(station, 10);
-                            station.addNeighbour(prevStation, 10);
+                            prevStation.addNeighbour(station);
+                            station.addNeighbour(prevStation);
                         }
                     }
 
@@ -44,8 +44,8 @@ public class InitStations {
                     if (trainLine.equals(lastLine)) {
                         // TODO: add time properly
                         Station prevStation = stations.get(stations.size() - 1);
-                        prevStation.addNeighbour(station, 10);
-                        station.addNeighbour(prevStation, 10);
+                        prevStation.addNeighbour(station);
+                        station.addNeighbour(prevStation);
                     } else {
                         lastLine = trainLine;
                     }
