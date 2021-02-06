@@ -2,6 +2,9 @@ package main.java.logic;
 
 import main.java.model.Station;
 import main.java.utils.Constants;
+import main.java.utils.Pair;
+import org.joda.time.DateTime;
+import org.joda.time.Minutes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,28 +12,49 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class GetAllPaths {
-    static int shortest = Integer.MAX_VALUE / 2;
+    private static int shortest = (int) (Integer.MAX_VALUE / Constants.minLengthMultiplier);
 
-    public static List<List<Station>> getAllPaths(
-            List<Station> allStations, Station origin, Station destination) {
+    private static final GetAllPaths Instance = new GetAllPaths();
+    private GetAllPaths() {}
+
+    private Station origin;
+    private Station destination;
+    private DateTime startTime;
+
+    public static GetAllPaths getInstance() {
+        return Instance;
+    }
+
+    public static void init(Station origin, Station destination, DateTime startTime) {
+        Instance.origin = origin;
+        Instance.destination = destination;
+        Instance.startTime = startTime;
+    }
+
+    public static List<Pair<List<Station>, DateTime>> getAllPaths(
+            List<Station> allStations) {
         boolean[] visited = new boolean[allStations.size()];
         Stack<Station> currentPath = new Stack<>();
-        ArrayList<ArrayList<Station>> simplePaths = new ArrayList<>();
-        DFS(allStations, currentPath, simplePaths, visited, null, origin, destination);
-        return simplePaths.stream().filter(path -> path.size() < shortest * Constants.minLengthMultiplier)
+        List<Pair<List<Station>, DateTime>>simplePaths = new ArrayList<>();
+        DFS(allStations, currentPath, simplePaths, visited, null, Instance.origin, Instance.startTime);
+        return simplePaths
+                .stream()
+                .filter(path -> Minutes.minutesBetween(getInstance().startTime, path.getSecond()).getMinutes()
+                        < shortest * Constants.minLengthMultiplier)
                 .collect(Collectors.toList());
     }
 
     private static void DFS(List<Station> allStations,
                             Stack<Station> currentPath,
-                            ArrayList<ArrayList<Station>> simplePaths,
+                            List<Pair<List<Station>, DateTime>> simplePaths,
                             boolean[] visited,
                             Station previous,
                             Station current,
-                            Station destination) {
+                            DateTime currentTime) {
 
         // quick return heuristic: double length of current shortest path
-        if (currentPath.size() > shortest * Constants.minLengthMultiplier) {
+        if (Minutes.minutesBetween(Instance.startTime, currentTime).getMinutes()
+                > shortest * Constants.minLengthMultiplier) {
             return;
         }
 
@@ -39,9 +63,9 @@ public class GetAllPaths {
         visited[indexOfCurrent] = true;
         currentPath.push(current);
 
-        if (current.equals(destination)) {
-            simplePaths.add(new ArrayList(currentPath));
-            shortest = Math.min(currentPath.size(), shortest);
+        if (current.equals(Instance.destination)) {
+            simplePaths.add(new Pair<>(new ArrayList<>(currentPath), currentTime));
+            shortest = Math.min(Minutes.minutesBetween(Instance.startTime, currentTime).getMinutes(), shortest);
             visited[indexOfCurrent] = false;
             currentPath.pop();
             return;
@@ -53,7 +77,15 @@ public class GetAllPaths {
                     && !station.equals(previous)
                     // prevent switching more than once
                     && !station.getNeighbours().contains(previous)) {
-                DFS(allStations, currentPath, simplePaths, visited, current, station, destination);
+                int travelTime = Constants.TravelTimes.getTravelTime(current.getStationCode(),
+                        station.getStationCode(),
+                        currentTime);
+                // Invalid movement at this time
+                if (travelTime == -1) {
+                    continue;
+                }
+                DateTime nextTime = currentTime.plusMinutes(travelTime);
+                DFS(allStations, currentPath, simplePaths, visited, current, station, nextTime);
             }
         }
         currentPath.pop();
