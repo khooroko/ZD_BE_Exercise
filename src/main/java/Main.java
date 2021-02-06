@@ -1,6 +1,6 @@
 package main.java;
 
-import main.java.logic.GetAllPaths;
+import main.java.logic.PathGetter;
 import main.java.logic.InitStations;
 import main.java.model.Station;
 import main.java.model.StationCode;
@@ -17,27 +17,11 @@ import java.util.List;
 public class Main {
     public static ArrayList<Station> stations = new ArrayList<>();
 
-    public static void main(String[] args) {
-        // write your code here
-        System.out.println("hi");
-        InitStations.initStations(stations, "data/StationMap.csv");
-        BufferedReader br = new
-                BufferedReader(new InputStreamReader(System.in));
-        try {
-            String[] inputs = br.readLine().split("\\s+");
-            StationCode originCode = new StationCode(inputs[0]);
-            StationCode destinationCode = new StationCode(inputs[1]);
-            Station originStation = stations.stream()
-                    .filter(station -> station.getStationCode().equals(originCode))
-                    .findAny()
-                    .orElse(null);
-            Station destinationStation = stations.stream()
-                    .filter(station -> station.getStationCode().equals(destinationCode))
-                    .findAny()
-                    .orElse(null);
-            DateTime startTime = DateTime.now();
-            GetAllPaths.init(originStation, destinationStation, startTime);
-            List<Pair<List<Station>, DateTime>> results = GetAllPaths.getAllPaths(stations);
+    private static void printResults(List<Pair<List<Station>, DateTime>> results,
+                                     DateTime startTime,
+                                     StationCode originCode,
+                                     StationCode destinationCode) {
+        if (results.size() > 0) {
             System.out.println("Routes sorted by travel time");
             for (int i = 0; i < results.size(); i++) {
                 System.out.println(String.format("Route %d:", i));
@@ -70,6 +54,52 @@ public class Main {
                         Minutes.minutesBetween(startTime, result.getSecond()).getMinutes()));
                 System.out.println();
             }
+        } else {
+            System.out.println(String.format("No routes available between %s and %s at this time.",
+                    originCode, destinationCode));
+        }
+    }
+
+    public static void main(String[] args) {
+        InitStations.initStations(stations, "data/StationMap.csv");
+        BufferedReader br = new
+                BufferedReader(new InputStreamReader(System.in));
+        try {
+            String[] inputs = br.readLine().split("\\s+");
+            if (inputs.length < 2) {
+                throw new IllegalArgumentException("Invalid number of arguments.");
+            }
+            StationCode originCode = new StationCode(inputs[0]);
+            StationCode destinationCode = new StationCode(inputs[1]);
+            DateTime startTime;
+            if (inputs.length >= 3) {
+                try {
+                    startTime = DateTime.parse(inputs[2]);
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException(
+                            "Invalid date format. Please use \"YYYY-MM-DDThh:mm\" format, e.g. '2019-01-31T16:00'"
+                    );
+                }
+            } else {
+                startTime = DateTime.now();
+            }
+            Station originStation = stations.stream()
+                    .filter(station -> station.getStationCode().equals(originCode))
+                    .findAny()
+                    .orElse(null);
+            Station destinationStation = stations.stream()
+                    .filter(station -> station.getStationCode().equals(destinationCode))
+                    .findAny()
+                    .orElse(null);
+            if (originStation == null) {
+                throw new NullPointerException("Source station does not exist!");
+            }
+            if (destinationStation == null) {
+                throw new NullPointerException("Destination station does not exist!");
+            }
+            PathGetter.init(originStation, destinationStation, startTime);
+            List<Pair<List<Station>, DateTime>> results = PathGetter.getAllPaths(stations);
+            printResults(results, startTime, originCode, destinationCode);
         } catch (IOException e) {
             System.out.println("err");
         }

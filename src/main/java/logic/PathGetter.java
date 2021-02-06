@@ -11,17 +11,17 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-public class GetAllPaths {
+public class PathGetter {
     private static int shortest = (int) (Integer.MAX_VALUE / Constants.minLengthMultiplier);
 
-    private static final GetAllPaths Instance = new GetAllPaths();
-    private GetAllPaths() {}
+    private static final PathGetter Instance = new PathGetter();
+    private PathGetter() {}
 
     private Station origin;
     private Station destination;
     private DateTime startTime;
 
-    public static GetAllPaths getInstance() {
+    public static PathGetter getInstance() {
         return Instance;
     }
 
@@ -52,7 +52,7 @@ public class GetAllPaths {
                             Station current,
                             DateTime currentTime) {
 
-        // quick return heuristic: double length of current shortest path
+        // quick return heuristic: multiplier of current shortest path
         if (Minutes.minutesBetween(Instance.startTime, currentTime).getMinutes()
                 > shortest * Constants.minLengthMultiplier) {
             return;
@@ -76,7 +76,9 @@ public class GetAllPaths {
                     && !currentPath.contains(station)
                     && !station.equals(previous)
                     // prevent switching more than once
-                    && !station.getNeighbours().contains(previous)) {
+                    && !station.getNeighbours().contains(previous)
+                    // do not add stations that yet not opened
+                    && station.getOpenDateTime().isBefore(currentTime)) {
                 int travelTime = Constants.TravelTimes.getTravelTime(current.getStationCode(),
                         station.getStationCode(),
                         currentTime);
