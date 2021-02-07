@@ -32,19 +32,21 @@ public class Main {
                         Station current = result.getFirst().get(k);
                         if (!current.getStationCode().getLine().equals(start.getStationCode().getLine())) {
                             if (k - j > 1) {
-                                System.out.println(String.format("Take %s from %s to %s",
+                                System.out.println(String.format("Take %s line from %s to %s",
                                         start.getStationCode().getLine(),
-                                        start.getStationCode().toString(),
-                                        result.getFirst().get(k - 1).getStationCode().toString()));
+                                        start.toString(),
+                                        result.getFirst().get(k - 1).toString()));
                             }
-                            System.out.println(String.format("Change to %s", current.getStationCode().getLine()));
+                            System.out.println(String.format("Change from %s line to %s line",
+                                    start.getStationCode().getLine(),
+                                    current.getStationCode().getLine()));
                             j = --k;
                             break;
                         } else if (k == result.getFirst().size() - 1) {
-                            System.out.println(String.format("Take %s from %s to %s",
+                            System.out.println(String.format("Take %s line from %s to %s",
                                     start.getStationCode().getLine(),
-                                    start.getStationCode().toString(),
-                                    current.getStationCode().toString()));
+                                    start.toString(),
+                                    current.toString()));
                             j = --k;
                             break;
                         }

@@ -45,10 +45,7 @@ public class Station {
 
     @Override
     public String toString() {
-        return "Station{" +
-                "stationCode=" + stationCode.toString() +
-                ", name=" + name +
-                '}';
+        return String.format("[%s] %s", stationCode.toString(), name);
     }
 
     @Override
