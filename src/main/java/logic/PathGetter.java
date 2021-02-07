@@ -28,6 +28,7 @@ public class PathGetter {
 
     public static void init(List<Station> allStations) {
         PathGetter.allStations = allStations;
+        shortest = (int) (Integer.MAX_VALUE / Constants.minLengthMultiplier);
     }
 
     public static List<Pair<List<Station>, DateTime>> getAllPaths(

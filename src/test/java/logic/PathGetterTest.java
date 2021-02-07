@@ -6,6 +6,7 @@ import main.java.utils.Constants;
 import main.java.utils.Pair;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -171,7 +172,10 @@ class PathGetterTest {
         stations.add(DT1);
         stations.add(DT2EW9CC6);
         stations.add(DT3);
+    }
 
+    @BeforeEach
+    void setUp() {
         PathGetter.init(stations);
     }
 
