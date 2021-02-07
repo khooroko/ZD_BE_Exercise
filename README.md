@@ -9,7 +9,8 @@ Ensure you have Java 11 or above installed in your system. Thereafter, you shoul
 to run the .jar file found in the
 [releases page](https://github.com/khooroko/ZD_BE_Exercise/releases).
 Alternatively, you can clone this repository and run Main#main in any IDE of your choice,
-or compile the program from the source code.
+or compile the program from the source code. However, you would need to download
+[jodatime](https://www.joda.org/joda-time/installation.html).
 
 ## Usage
 To run the .jar file from the command line, navigate to the directory and run
