@@ -6,6 +6,7 @@ import main.java.model.Station;
 import main.java.model.StationCode;
 import main.java.utils.Errors;
 import main.java.utils.Pair;
+import main.java.utils.ResourceResolver;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 
@@ -63,7 +64,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        List<Station> stations = InitStations.initStations("data/StationMap.csv");
+        List<Station> stations = InitStations.initStations(ResourceResolver.resolveResource("/StationMap.csv"));
         PathGetter.init(stations);
         BufferedReader br = new
                 BufferedReader(new InputStreamReader(System.in));

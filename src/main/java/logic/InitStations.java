@@ -6,9 +6,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -17,11 +15,11 @@ public class InitStations {
     //Delimiter used in the CSV file
     private static final String COMMA_DELIMITER = ",";
 
-    public static List<Station> initStations(String dir) throws IOException {
+    public static List<Station> initStations(InputStream is) throws IOException {
         List<Station> stations = new ArrayList<>();
         BufferedReader br = null;
         try {
-            br = new BufferedReader(new FileReader(dir));
+            br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             String line = "";
             br.readLine();
             String lastLine = "";
