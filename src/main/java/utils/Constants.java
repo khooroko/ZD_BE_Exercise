@@ -4,7 +4,7 @@ import main.java.model.StationCode;
 import org.joda.time.DateTime;
 
 public class Constants {
-    public static final float minLengthMultiplier = 1.25f;
+    public static final float minLengthMultiplier = 1.5f;
 
     public static class TimeOfDay implements Comparable<TimeOfDay> {
         private int hour;
@@ -21,6 +21,14 @@ public class Constants {
         public TimeOfDay(int hour, int minute) {
             this.hour = hour;
             this.minute = minute;
+        }
+
+        public int getHour() {
+            return hour;
+        }
+
+        public int getMinute() {
+            return minute;
         }
 
         @Override

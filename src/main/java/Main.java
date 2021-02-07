@@ -1,7 +1,7 @@
 package main.java;
 
-import main.java.logic.PathGetter;
 import main.java.logic.InitStations;
+import main.java.logic.PathGetter;
 import main.java.model.Station;
 import main.java.model.StationCode;
 import main.java.utils.Pair;

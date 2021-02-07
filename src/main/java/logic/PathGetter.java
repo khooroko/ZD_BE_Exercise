@@ -43,6 +43,9 @@ public class PathGetter {
                 .stream()
                 .filter(path -> Minutes.minutesBetween(PathGetter.startTime, path.getSecond()).getMinutes()
                         < shortest * Constants.minLengthMultiplier)
+                .sorted((path1, path2) -> path1.getSecond().isBefore(path2.getSecond()) ? -1
+                        : path1.getSecond().isAfter(path2.getSecond()) ? 1
+                        : 0)
                 .collect(Collectors.toList());
     }
 
