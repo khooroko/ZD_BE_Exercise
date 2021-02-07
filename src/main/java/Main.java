@@ -4,6 +4,7 @@ import main.java.logic.InitStations;
 import main.java.logic.PathGetter;
 import main.java.model.Station;
 import main.java.model.StationCode;
+import main.java.utils.Errors;
 import main.java.utils.Pair;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
@@ -12,9 +13,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Locale;
 
 public class Main {
-    public static List<Station> stations;
 
     private static void printResults(List<Pair<List<Station>, DateTime>> results,
                                      DateTime startTime,
@@ -59,48 +60,52 @@ public class Main {
         }
     }
 
-    public static void main(String[] args) {
-        stations = InitStations.initStations("data/StationMap.csv");
+    public static void main(String[] args) throws IOException {
+        List<Station> stations = InitStations.initStations("data/StationMap.csv");
         PathGetter.init(stations);
         BufferedReader br = new
                 BufferedReader(new InputStreamReader(System.in));
-        try {
-            String[] inputs = br.readLine().split("\\s+");
-            if (inputs.length < 2) {
-                throw new IllegalArgumentException("Invalid number of arguments.");
-            }
-            StationCode originCode = new StationCode(inputs[0]);
-            StationCode destinationCode = new StationCode(inputs[1]);
-            DateTime startTime;
-            if (inputs.length >= 3) {
-                try {
-                    startTime = DateTime.parse(inputs[2]);
-                } catch (IllegalArgumentException e) {
-                    throw new IllegalArgumentException(
-                            "Invalid date format. Please use \"YYYY-MM-DDThh:mm\" format, e.g. '2019-01-31T16:00'"
-                    );
+        while (true) {
+            try {
+                String[] inputs = br.readLine().split("\\s+");
+                if (inputs.length == 1 && inputs[0].toLowerCase(Locale.ROOT).equals("exit")) {
+                    break;
                 }
-            } else {
-                startTime = DateTime.now();
+                if (inputs.length < 2) {
+                    throw new IllegalArgumentException(Errors.ERR_INVALID_ARG_NUMBER);
+                }
+                StationCode originCode = new StationCode(inputs[0]);
+                StationCode destinationCode = new StationCode(inputs[1]);
+                DateTime startTime;
+                if (inputs.length >= 3) {
+                    try {
+                        startTime = DateTime.parse(inputs[2]);
+                    } catch (IllegalArgumentException e) {
+                        throw new IllegalArgumentException(Errors.ERR_INVALID_DATE_FORMAT);
+                    }
+                } else {
+                    startTime = DateTime.now();
+                }
+                Station originStation = stations.stream()
+                        .filter(station -> station.getStationCode().equals(originCode))
+                        .findAny()
+                        .orElse(null);
+                Station destinationStation = stations.stream()
+                        .filter(station -> station.getStationCode().equals(destinationCode))
+                        .findAny()
+                        .orElse(null);
+                if (originStation == null) {
+                    throw new IllegalArgumentException(Errors.ERR_SOURCE_NOT_EXIST);
+                }
+                if (destinationStation == null) {
+                    throw new IllegalArgumentException(Errors.ERR_DEST_NOT_EXIST);
+                }
+                List<Pair<List<Station>, DateTime>> results =
+                        PathGetter.getAllPaths(originStation, destinationStation, startTime);
+                printResults(results, startTime, originCode, destinationCode);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            Station originStation = stations.stream()
-                    .filter(station -> station.getStationCode().equals(originCode))
-                    .findAny()
-                    .orElse(null);
-            Station destinationStation = stations.stream()
-                    .filter(station -> station.getStationCode().equals(destinationCode))
-                    .findAny()
-                    .orElse(null);
-            if (originStation == null) {
-                throw new NullPointerException("Source station does not exist!");
-            }
-            if (destinationStation == null) {
-                throw new NullPointerException("Destination station does not exist!");
-            }
-            List<Pair<List<Station>, DateTime>> results = PathGetter.getAllPaths(originStation, destinationStation, startTime);
-            printResults(results, startTime, originCode, destinationCode);
-        } catch (IOException e) {
-            System.out.println("err");
         }
     }
 }

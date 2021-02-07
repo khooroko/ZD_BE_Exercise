@@ -7,16 +7,8 @@ public class Constants {
     public static final float minLengthMultiplier = 1.5f;
 
     public static class TimeOfDay implements Comparable<TimeOfDay> {
-        private int hour;
-        private int minute;
-
-        public TimeOfDay(String time) throws Exception {
-            if (time.length() != 4) {
-                throw new Exception("invalid time of day");
-            }
-            hour = Integer.parseInt(time.substring(0, 2));
-            minute = Integer.parseInt(time.substring(2, 4));
-        }
+        private final int hour;
+        private final int minute;
 
         public TimeOfDay(int hour, int minute) {
             this.hour = hour;
@@ -81,7 +73,7 @@ public class Constants {
         }
 
         // returns travel time in minutes
-        // -1 means it's not possible
+        // -1 means the line does not operate at this time
         public static int getTravelTime(StationCode origin, StationCode dest, DateTime date) {
             TimeOfDay currentTime = new TimeOfDay(date.getHourOfDay(), date.getMinuteOfHour());
             if (currentTime.isBetween(Peak.morningStart, Peak.morningEnd)
