@@ -9,13 +9,15 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class InitStations {
     //Delimiter used in the CSV file
     private static final String COMMA_DELIMITER = ",";
 
-    public static void initStations(ArrayList<Station> stations, String dir) {
+    public static List<Station> initStations(String dir) {
+        List<Station> stations = new ArrayList<>();
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(dir));
@@ -90,6 +92,6 @@ public class InitStations {
                 ie.printStackTrace();
             }
         }
-        return;
+        return stations;
     }
 }
