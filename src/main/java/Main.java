@@ -62,6 +62,7 @@ public class Main {
 
     public static void main(String[] args) {
         InitStations.initStations(stations, "data/StationMap.csv");
+        PathGetter.init(stations);
         BufferedReader br = new
                 BufferedReader(new InputStreamReader(System.in));
         try {
@@ -97,8 +98,7 @@ public class Main {
             if (destinationStation == null) {
                 throw new NullPointerException("Destination station does not exist!");
             }
-            PathGetter.init(originStation, destinationStation, startTime);
-            List<Pair<List<Station>, DateTime>> results = PathGetter.getAllPaths(stations);
+            List<Pair<List<Station>, DateTime>> results = PathGetter.getAllPaths(originStation, destinationStation, startTime);
             printResults(results, startTime, originCode, destinationCode);
         } catch (IOException e) {
             System.out.println("err");

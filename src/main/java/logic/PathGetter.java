@@ -17,35 +17,36 @@ public class PathGetter {
     private static final PathGetter Instance = new PathGetter();
     private PathGetter() {}
 
-    private Station origin;
-    private Station destination;
-    private DateTime startTime;
+    private static List<Station> allStations;
+    private static Station origin;
+    private static Station destination;
+    private static DateTime startTime;
 
     public static PathGetter getInstance() {
         return Instance;
     }
 
-    public static void init(Station origin, Station destination, DateTime startTime) {
-        Instance.origin = origin;
-        Instance.destination = destination;
-        Instance.startTime = startTime;
+    public static void init(List<Station> allStations) {
+        PathGetter.allStations = allStations;
     }
 
     public static List<Pair<List<Station>, DateTime>> getAllPaths(
-            List<Station> allStations) {
+            Station origin, Station destination, DateTime startTime) {
+        PathGetter.origin = origin;
+        PathGetter.destination = destination;
+        PathGetter.startTime = startTime;
         boolean[] visited = new boolean[allStations.size()];
         Stack<Station> currentPath = new Stack<>();
         List<Pair<List<Station>, DateTime>>simplePaths = new ArrayList<>();
-        DFS(allStations, currentPath, simplePaths, visited, null, Instance.origin, Instance.startTime);
+        DFS(currentPath, simplePaths, visited, null, origin, startTime);
         return simplePaths
                 .stream()
-                .filter(path -> Minutes.minutesBetween(getInstance().startTime, path.getSecond()).getMinutes()
+                .filter(path -> Minutes.minutesBetween(PathGetter.startTime, path.getSecond()).getMinutes()
                         < shortest * Constants.minLengthMultiplier)
                 .collect(Collectors.toList());
     }
 
-    private static void DFS(List<Station> allStations,
-                            Stack<Station> currentPath,
+    private static void DFS(Stack<Station> currentPath,
                             List<Pair<List<Station>, DateTime>> simplePaths,
                             boolean[] visited,
                             Station previous,
@@ -53,7 +54,7 @@ public class PathGetter {
                             DateTime currentTime) {
 
         // quick return heuristic: multiplier of current shortest path
-        if (Minutes.minutesBetween(Instance.startTime, currentTime).getMinutes()
+        if (Minutes.minutesBetween(startTime, currentTime).getMinutes()
                 > shortest * Constants.minLengthMultiplier) {
             return;
         }
@@ -63,9 +64,9 @@ public class PathGetter {
         visited[indexOfCurrent] = true;
         currentPath.push(current);
 
-        if (current.equals(Instance.destination)) {
+        if (current.equals(destination)) {
             simplePaths.add(new Pair<>(new ArrayList<>(currentPath), currentTime));
-            shortest = Math.min(Minutes.minutesBetween(Instance.startTime, currentTime).getMinutes(), shortest);
+            shortest = Math.min(Minutes.minutesBetween(startTime, currentTime).getMinutes(), shortest);
             visited[indexOfCurrent] = false;
             currentPath.pop();
             return;
@@ -87,7 +88,7 @@ public class PathGetter {
                     continue;
                 }
                 DateTime nextTime = currentTime.plusMinutes(travelTime);
-                DFS(allStations, currentPath, simplePaths, visited, current, station, nextTime);
+                DFS(currentPath, simplePaths, visited, current, station, nextTime);
             }
         }
         currentPath.pop();
