@@ -12,6 +12,10 @@ Alternatively, you can clone this repository and run Main#main in any IDE of you
 or compile the program from the source code.
 
 ## Usage
+To run the .jar file from the command line, navigate to the directory and run
+```
+java -jar ZD_BE_Exercise.jar
+```
 After opening the .jar file, input the origin station, destination station, and desired 
 start time in a single line in the following format: `<Origin station code> <Destination 
 station code> <Start time in "YYYY-MM-DDThh:mm" format>`. For example,
